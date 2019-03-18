@@ -33,6 +33,21 @@ public class BaseResult<T> implements Serializable {
         return baseResult;
     }
 
+    public static BaseResult ofStatus(Code code){
+        BaseResult baseResult = new BaseResult();
+        baseResult.setCode(code.getCode());
+        baseResult.setMsg(code.getMsg());
+        return baseResult;
+    }
+
+    public static BaseResult ofStatus(Code code,Object data){
+        BaseResult baseResult = new BaseResult();
+        baseResult.setCode(code.getCode());
+        baseResult.setMsg(code.getMsg());
+        baseResult.setData(data);
+        return baseResult;
+    }
+
 
     enum Code{
         SUCCESS(200,"成功"),

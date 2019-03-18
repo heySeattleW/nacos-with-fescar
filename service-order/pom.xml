@@ -7,9 +7,9 @@
         <artifactId>nacos-with-fescar</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>service-order-client</artifactId>
+    <artifactId>service-order</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>service-order-client</name>
+    <name>service-order</name>
     <description>Demo project for Spring Boot</description>
 
 </project>
