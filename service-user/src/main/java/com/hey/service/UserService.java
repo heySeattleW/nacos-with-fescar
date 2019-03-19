@@ -1,5 +1,6 @@
 package com.hey.service;
 
+import com.alibaba.fescar.spring.annotation.GlobalTransactional;
 import com.hey.base.BaseResult;
 import com.hey.client.GoodsFeignClient;
 import com.hey.client.OrderFeignClient;
@@ -9,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.LinkedHashMap;
 
 /**
  * @ClassName UserService
@@ -33,6 +36,7 @@ public class UserService {
      * @param buyGoodsDTO
      * @return
      */
+    @GlobalTransactional
     @Transactional
     public BaseResult buyGoods(BuyGoodsDTO buyGoodsDTO){
         // 1.调用订单服务，创建订单
@@ -42,19 +46,20 @@ public class UserService {
         if(baseResult.getCode() == 200){
             //创建订单成功
             // 2.减少库存
-            BuyGoodsDTO newBuyGoodsDTO = (BuyGoodsDTO)baseResult.getData();
-            BaseResult result = goodsFeignClient.decreaseGoodsNumber(buyGoodsDTO.getGoodsNumber());
+            LinkedHashMap resultData = (LinkedHashMap)baseResult.getData();
+            Integer orderId = (Integer)resultData.get("orderId");
+            BaseResult result = goodsFeignClient.decreaseGoodsNumber(buyGoodsDTO.getGoodsId(),buyGoodsDTO.getGoodsNumber());
             log.info("减少库存服务结果：{}",result.getMsg());
             if(result.getCode() == 200){
                 //减少库存成功
                 // 3.扣除用户余额
                 userRepository.reduceUserMoney(buyGoodsDTO.getPrice(),buyGoodsDTO.getUserId());
                 // 4.扣除余额成功则置订单状态为已完成
-                BaseResult finishResult = orderFeignClient.finishOrderWithSuccess(newBuyGoodsDTO.getOrderId());
+                BaseResult finishResult = orderFeignClient.finishOrderWithSuccess(orderId);
                 log.info("完成订单服务结果：{}",finishResult.getMsg());
                 if(finishResult.getCode() == 200){
                     //完成订单,返回订单号
-                    return BaseResult.ofSuccess(newBuyGoodsDTO.getOrderId());
+                    return BaseResult.ofSuccess(orderId);
                 }else {
                     throw new RuntimeException("完成订单阶段失败");
                 }

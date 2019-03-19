@@ -16,3 +16,5 @@ nacos-with-fescar,使用nacos作为注册中心和配置中心，尝试使用fes
 特别说明：
     该项目旨在整合nacos和fescar，目的为通过三个基础服务验证fescar的可用性。其中忽略了微服务网关，熔断器，链路追踪等重要功能，
     也许会在后续追加。emmm,let's do it!
+    
+   目前还没正式使fescar生效！
